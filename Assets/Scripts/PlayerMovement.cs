@@ -4,20 +4,28 @@ using UnityEngine;
 //public class PlayerMovement : MonoBehaviour
 public class PlayerMovement : NetworkBehaviour
 {
+    [SerializeField]
+    float moverSpeed;
+
+    [SerializeField]
+    NetworkVariable <int> vida = new NetworkVariable<int>(
+        3,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner);
+
     Rigidbody2D rb;
     float moverHorizontal, moverVertical;
-    float moverSpeed;
+    
     Vector2 movimiento;
     void Start()
     {
-        moverSpeed = 10;
         rb = GetComponent<Rigidbody2D>();
     }
 
    
     void Update() 
     {
-        if (!IsOwner) return; //Si no es el dueño/pcServer return
+        if (!IsOwner) return; //Si no es el dueï¿½o/pcServer return
         moveFuncion();
       
     }
@@ -25,11 +33,15 @@ public class PlayerMovement : NetworkBehaviour
     void moveFuncion()
     {
         //Movimiento Player
-        moverHorizontal = Input.GetAxis("Horizontal");
-        moverVertical = Input.GetAxis("Vertical");
+        moverHorizontal = Input.GetAxisRaw("Horizontal");
+        moverVertical = Input.GetAxisRaw("Vertical");
 
         movimiento = new Vector2(moverHorizontal, moverVertical).normalized;
         rb.linearVelocity = movimiento * moverSpeed;
     }
 
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        vida.Value=vida.Value-1;
+    }
 }
