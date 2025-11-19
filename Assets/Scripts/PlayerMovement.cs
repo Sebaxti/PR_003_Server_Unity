@@ -13,6 +13,15 @@ public class PlayerMovement : NetworkBehaviour
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Owner);
 
+        [SerializeField]
+    NetworkVariable <int> puntos = new NetworkVariable<int>(
+        0,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner);
+
+    [SerializeField]
+    GameObject prefabProyectil;
+
     Rigidbody2D rb;
     float moverHorizontal, moverVertical;
     
@@ -25,8 +34,9 @@ public class PlayerMovement : NetworkBehaviour
    
     void Update() 
     {
-        if (!IsOwner) return; //Si no es el due�o/pcServer return
+        if (!IsOwner) return; //Si no es el duenyo/pcServer return
         moveFuncion();
+        disparar();
       
     }
 
@@ -40,8 +50,40 @@ public class PlayerMovement : NetworkBehaviour
         rb.linearVelocity = movimiento * moverSpeed;
     }
 
+    void disparar()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            disparoOnlineServerRpc();
+        }
+    }
+
+    [ServerRpc]
+    void disparoOnlineServerRpc()
+    {
+        GameObject proyectil= Instantiate(prefabProyectil);
+        proyectil.transform.position= transform.position;
+        NetworkObject disparo = proyectil.GetComponent<NetworkObject>();
+        disparo.Spawn();
+
+    }
+
     void OnCollisionEnter2D(Collision2D collision)
     {
-        vida.Value=vida.Value-1;
+        if (!IsOwner) return;
+
+        if (collision.collider.CompareTag("moneda"))
+        {
+            puntos.Value=puntos.Value+1;
+            NetworkObject moneda = collision.gameObject.GetComponent<NetworkObject>();
+            EliminarMonedaServerRpc(moneda.NetworkObjectId);
+        }
+    }
+
+    [ServerRpc]
+    void EliminarMonedaServerRpc(ulong monedaId)
+    {
+        NetworkObject moneda=NetworkManager.Singleton.SpawnManager.SpawnedObjects[monedaId];
+           moneda.Despawn(); 
     }
 }

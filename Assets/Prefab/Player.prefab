@@ -389,8 +389,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   ShowTopMostFoldoutHeaderGroup: 1
-  vida: 3
   moverSpeed: 10
+  vida:
+    m_InternalValue: 3
+  puntos:
+    m_InternalValue: 0
+  prefabProyectil: {fileID: 6710091845732975352, guid: 12cef1350c10d490795f00c42331b87b, type: 3}
 --- !u!114 &9099049964701596094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,10 +424,10 @@ MonoBehaviour:
   UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
-  SyncPositionZ: 0
-  SyncRotAngleX: 0
-  SyncRotAngleY: 0
-  SyncRotAngleZ: 0
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0
